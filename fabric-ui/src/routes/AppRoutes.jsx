@@ -13,13 +13,16 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      {/* DEFAULT REDIRECT */}
+      <Route path="/" element={<Navigate to="/azure-migration" />} />
+
       {/* PUBLIC ROUTES */}
       <Route path="/login" element={<Login />} />
       <Route path="/azure-migration" element={<AzureMigration />} />
 
       {/* PROTECTED ROUTES */}
       {user && (
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/app" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="pipelines" element={<Pipelines />} />
           <Route path="pipelines/new" element={<NewPipeline />} />
@@ -30,7 +33,7 @@ const AppRoutes = () => {
       <Route
         path="*"
         element={
-          user ? <Navigate to="/" /> : <Navigate to="/login" />
+          user ? <Navigate to="/app" /> : <Navigate to="/login" />
         }
       />
     </Routes>

@@ -32,6 +32,7 @@ import LayersIcon from "@mui/icons-material/Layers";
 import FolderIcon from "@mui/icons-material/Folder";
 import CheckBoxDropdown from "../components/CheckBoxDropdown";
 import DragDropUpload from "../components/DragDropUpload";
+import { configureAdf } from "../services/authentication/authentication";
 
 
 const StepIconRoot = styled("div")(({ ownerState }) => ({
@@ -77,6 +78,10 @@ const AzureMigration = () => {
         { step: "STEP 3", title: "Processing", summary: "Migration Completed" },
     ];
 
+    const [comeBack, setComeback] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({
         tenantId: "",
@@ -93,6 +98,49 @@ const AzureMigration = () => {
 
     const handleBack = () => {
         setActiveStep((prev) => prev - 1);
+    };
+
+    console.log("Form Data:", formData);
+
+    const handleCreate = async () => {
+        try {
+            if (activeStep == 0) {
+                const { tenantId, clientId, clientSecret, subscription } = formData;
+
+                // Validation
+                const isFormValid =
+                    tenantId?.trim() &&
+                    clientId?.trim() &&
+                    clientSecret?.trim() &&
+                    subscription?.trim();
+
+                if (!isFormValid) {
+                    setError("All Azure credentials are required.");
+                    return;
+                }
+
+                setLoading(true);
+                setError(null);
+
+                const payload = {
+                    tenantId,
+                    clientId,
+                    clientSecret,
+                    azureSubscriptionId: subscription,
+                };
+
+                const response = await configureAdf(payload);
+
+                console.log("ADF Configuration Response:", response);
+            }
+
+            handleNext();
+        } catch (error) {
+            console.error("ADF Configuration Failed:", error);
+            setError("Failed to configure Azure. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange = (field, value) => {
@@ -379,7 +427,7 @@ const AzureMigration = () => {
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between", minHeight: "48px !important", }}>
                     <div className="logo">
                         <div className="logo-icon"><svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
-                        <span className="logo-text">Azure<span>Migrate</span></span>
+                        <span className="logo-text">Fabric<span>Shift</span></span>
                     </div>
                     <Box
                         sx={{
@@ -537,7 +585,7 @@ const AzureMigration = () => {
                                         {activeStep > 0 ? "Back" : "Clear Form"}
                                     </button>
 
-                                    <button className="btn-primary" onClick={handleNext}>
+                                    <button className="btn-primary" onClick={handleCreate}>
                                         {activeStep === 1 ? "Start Migration" : "Continue"} <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                                     </button>
                                 </Box>

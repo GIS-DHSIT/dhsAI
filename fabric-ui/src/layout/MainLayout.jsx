@@ -49,7 +49,7 @@ const MainLayout = () => {
         }}
       >
         <Toolbar />
-        <Outlet />   {/* 🔥 THIS IS REQUIRED */}
+        <Outlet />
       </Box>
     </Box>
   );
