@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const BASE_URL =
-    // import.meta.env.VITE_BASE_URL ||
     "https://api.fabric.com/v1";
 
 // Create axios instance
@@ -41,7 +40,7 @@ const apiService = async (
 
         console.log("📥 API Response:", response.data);
         return response.data;
-        
+
     } catch (error) {
         // Handle token expiration
         if (
