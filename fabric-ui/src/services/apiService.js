@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const BASE_URL =
-    "https://api.fabric.com/v1";
+const BASE_URL = "https://api.fabric.com/v1";
 
 // Create axios instance
 const axiosInstance = axios.create({
