@@ -1,0 +1,359 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --sky: #5ba3f5;
+  --border: rgba(30, 91, 181, 0.18);
+  --bright: #2e7df7;
+  --text-main: #0a1628;
+  --text-sub: #4a6080;
+  --glass:rgba(255,255,255,0.72); 
+  --shadow-lg:0 20px 60px rgba(10,22,40,0.18);
+
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1000px circle at 10% 10%, rgba(120, 160, 220, 0.7), transparent 40%),
+    radial-gradient(800px circle at 90% 90%, rgba(90, 130, 190, 0.6), transparent 40%),
+    linear-gradient(135deg, #f8fbff, #aebfd8);
+
+  background-attachment: fixed;   /* 👈 THIS FIXES IT */
+  background-repeat: no-repeat;
+}
+
+
+.btn-secondary {
+  padding: 10px 22px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--bright);
+  color: var(--bright);
+  background: rgba(46, 125, 247, 0.05);
+}
+
+.btn-primary {
+  padding: 11px 28px;
+  background: linear-gradient(135deg, #1e5bb5, #2e7df7);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 20px rgba(46, 125, 247, 0.35);
+  transition: all 0.25s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(46, 125, 247, 0.45);
+}
+
+.btn-primary svg {
+  width: 15px;
+  height: 15px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+
+  a:hover {
+    color: #747bff;
+  }
+
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #2e7df7, #1a3a6b);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+
+.logo-text {
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.logo-text span {
+  color: var(--sky);
+}
+
+
+/* .proc-card { background:var(--glass); backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.8); border-radius:24px; box-shadow:var(--shadow-lg); width:100%; max-width:700px; overflow:hidden; animation:fadeIn 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .proc-hero { background:linear-gradient(135deg,#050f1f,#0d2248,#1a3a6b); padding:36px 40px 28px; position:relative; overflow:hidden; text-align:center; }
+  .proc-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 80% at 50% 50%,rgba(46,125,247,0.2),transparent 70%); }
+  .proc-orbit-ring { position:absolute; top:50%; left:50%; border-radius:50%; border:1px solid rgba(46,125,247,0.15); transform:translate(-50%,-50%); }
+  .proc-orbit-ring:nth-child(1) { width:160px; height:160px; animation:float 6s ease-in-out infinite; }
+  .proc-orbit-ring:nth-child(2) { width:240px; height:240px; animation:float 9s ease-in-out infinite reverse; }
+  .proc-orbit-ring:nth-child(3) { width:340px; height:340px; animation:float 12s ease-in-out infinite; }
+  .proc-icon-wrap { position:relative; z-index:2; display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px; }
+  .proc-icon-circle { width:72px; height:72px; background:linear-gradient(135deg,#1e5bb5,#2e7df7); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 12px rgba(46,125,247,0.15), 0 0 0 24px rgba(46,125,247,0.07); }
+  .proc-icon-circle.done { background:linear-gradient(135deg,#1a7a4a,#22a060); box-shadow:0 0 0 12px rgba(34,160,96,0.15), 0 0 0 24px rgba(34,160,96,0.07); }
+  .proc-icon-circle svg { width:32px; height:32px; color:white; }
+  .proc-ripple { position:absolute; width:72px; height:72px; border-radius:50%; border:2px solid rgba(46,125,247,0.4); animation:ripple 2s ease-out infinite; }
+  .proc-ripple:nth-child(2) { animation-delay:0.7s; }
+  .proc-title { font-family:'Sora',sans-serif; font-size:22px; font-weight:700; color:white; letter-spacing:-0.02em; position:relative; z-index:2; margin-bottom:6px; }
+  .proc-subtitle { font-size:13px; color:rgba(200,223,254,0.7); position:relative; z-index:2; }
+  .proc-body { padding:28px 36px 32px; }
+
+
+  @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-10px);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+} */
+
+
+/* Card */
+.proc-card {
+  background: var(--glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 700px;
+  overflow: hidden;
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hero Section */
+.proc-hero {
+  background: linear-gradient(135deg, #050f1f, #0d2248, #1a3a6b);
+  padding: 36px 40px 28px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Soft Glow Background */
+.proc-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 80% at 50% 50%,
+    rgba(46, 125, 247, 0.25),
+    transparent 70%
+  );
+}
+
+/* Orbit Rings */
+.proc-orbit-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(46, 125, 247, 0.2);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Individual Ring Sizes + Animations */
+.proc-orbit-ring:nth-child(1) {
+  width: 160px;
+  height: 160px;
+  animation: orbit 10s linear infinite;
+}
+
+.proc-orbit-ring:nth-child(2) {
+  width: 240px;
+  height: 240px;
+  animation: orbit 16s linear infinite reverse;
+}
+
+.proc-orbit-ring:nth-child(3) {
+  width: 340px;
+  height: 340px;
+  animation: orbit 22s linear infinite;
+}
+
+/* Icon Wrapper */
+.proc-icon-wrap {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+/* Icon Circle */
+.proc-icon-circle {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #1e5bb5, #2e7df7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 0 0 12px rgba(46, 125, 247, 0.15),
+    0 0 0 24px rgba(46, 125, 247, 0.07);
+}
+
+.proc-icon-circle.done {
+  background: linear-gradient(135deg, #1a7a4a, #22a060);
+  box-shadow: 
+    0 0 0 12px rgba(34, 160, 96, 0.15),
+    0 0 0 24px rgba(34, 160, 96, 0.07);
+}
+
+.proc-icon-circle svg {
+  width: 32px;
+  height: 32px;
+  color: white;
+}
+
+/* Ripple Effect */
+.proc-ripple {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(46, 125, 247, 0.4);
+  pointer-events: none;
+  animation: ripple 2s ease-out infinite;
+}
+
+.proc-ripple:nth-child(2) {
+  animation-delay: 0.8s;
+}
+
+/* Titles */
+.proc-title {
+  font-family: "Sora", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 6px;
+}
+
+.proc-subtitle {
+  font-size: 13px;
+  color: rgba(200, 223, 254, 0.75);
+  position: relative;
+  z-index: 2;
+}
+
+/* Body */
+.proc-body {
+  padding: 28px 36px 32px;
+}
+
+/* ============================= */
+/* Animations */
+/* ============================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Proper Orbit Animation (keeps center alignment) */
+@keyframes orbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Ripple Animation */
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
