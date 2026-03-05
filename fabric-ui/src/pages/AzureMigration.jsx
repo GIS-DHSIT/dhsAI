@@ -2,7 +2,6 @@ import {
     Box,
     Typography,
     TextField,
-    Button,
     MenuItem,
     Card,
     CardContent,
@@ -12,11 +11,7 @@ import {
     AppBar,
     Toolbar,
     Container,
-    Paper,
     Grid,
-    FormControl,
-    Select,
-    OutlinedInput,
     Autocomplete,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
@@ -33,6 +28,53 @@ import FolderIcon from "@mui/icons-material/Folder";
 import CheckBoxDropdown from "../components/CheckBoxDropdown";
 import DragDropUpload from "../components/DragDropUpload";
 import { configureAdf } from "../services/authentication/authentication";
+import * as yup from "yup";
+
+const guidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+
+const stepSchemas = [
+    // STEP 1
+    yup.object().shape({
+        tenantId: yup
+            .string()
+            .required("Tenant ID is required")
+            .matches(guidRegex, "Invalid Tenant ID format"),
+
+        clientId: yup
+            .string()
+            .required("Client ID is required")
+            .matches(guidRegex, "Invalid Client ID format"),
+
+        clientSecret: yup
+            .string()
+            .required("Client Secret is required")
+            .min(10, "Client Secret must be at least 10 characters"),
+
+        subscription: yup
+            .string()
+            .required("Azure Subscription is required"),
+    }),
+
+    // STEP 2
+    yup.object().shape({
+        azureDataFactory: yup
+            .string()
+            .required("Azure Data Factory is required"),
+
+        fabricWorkspace: yup
+            .string()
+            .required("Fabric Workspace is required"),
+
+        pipelines: yup
+            .array()
+            .min(1, "Select at least one pipeline"),
+
+        configFile: yup
+            .mixed()
+            .required("Config file is required"),
+    }),
+];
 
 
 const StepIconRoot = styled("div")(({ ownerState }) => ({
@@ -81,6 +123,7 @@ const AzureMigration = () => {
     const [comeBack, setComeback] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
 
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({
@@ -88,6 +131,12 @@ const AzureMigration = () => {
         clientId: "",
         clientSecret: "",
         subscription: "",
+
+        // STEP 2
+        azureDataFactory: "",
+        fabricWorkspace: "",
+        pipelines: [],
+        configFile: [],
     });
 
     const handleNext = () => {
@@ -100,44 +149,42 @@ const AzureMigration = () => {
         setActiveStep((prev) => prev - 1);
     };
 
-    console.log("Form Data:", formData);
-
     const handleCreate = async () => {
         try {
-            if (activeStep == 0) {
-                const { tenantId, clientId, clientSecret, subscription } = formData;
+            const currentSchema = stepSchemas[activeStep];
 
-                // Validation
-                const isFormValid =
-                    tenantId?.trim() &&
-                    clientId?.trim() &&
-                    clientSecret?.trim() &&
-                    subscription?.trim();
+            await currentSchema.validate(formData, {
+                abortEarly: false,
+            });
 
-                if (!isFormValid) {
-                    setError("All Azure credentials are required.");
-                    return;
-                }
+            setValidationErrors({});
+            setError(null);
 
+            if (activeStep === 0) {
                 setLoading(true);
-                setError(null);
 
                 const payload = {
-                    tenantId,
-                    clientId,
-                    clientSecret,
-                    azureSubscriptionId: subscription,
+                    tenantId: formData.tenantId,
+                    clientId: formData.clientId,
+                    clientSecret: formData.clientSecret,
+                    azureSubscriptionId: formData.subscription,
                 };
 
                 const response = await configureAdf(payload);
-
                 console.log("ADF Configuration Response:", response);
             }
 
             handleNext();
-        } catch (error) {
-            console.error("ADF Configuration Failed:", error);
-            setError("Failed to configure Azure. Please try again.");
+        } catch (err) {
+            if (err.inner) {
+                const errors = {};
+                err.inner.forEach((e) => {
+                    errors[e.path] = e.message;
+                });
+                setValidationErrors(errors);
+            } else {
+                console.error(err);
+            }
         } finally {
             setLoading(false);
         }
@@ -147,6 +194,11 @@ const AzureMigration = () => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
+        }));
+
+        setValidationErrors((prev) => ({
+            ...prev,
+            [field]: "",
         }));
     };
 
@@ -182,6 +234,8 @@ const AzureMigration = () => {
                                     fullWidth
                                     value={formData.tenantId}
                                     onChange={(e) => handleChange("tenantId", e.target.value)}
+                                    error={!!validationErrors.tenantId}
+                                    helperText={validationErrors.tenantId}
                                     sx={{
                                         "& .MuiInputBase-input": {
                                             fontSize: "13px",   // 👈 change here
@@ -196,7 +250,7 @@ const AzureMigration = () => {
                                     }}
                                 />
                             </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 6, lg: 6 }}>
+                            <Grid size={{ xs: 12, md: 6, lg: 6 }}>
                                 <TextField
                                     label="Client ID"
                                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -204,6 +258,8 @@ const AzureMigration = () => {
                                     fullWidth
                                     value={formData.clientId}
                                     onChange={(e) => handleChange("clientId", e.target.value)}
+                                    error={!!validationErrors.clientId}
+                                    helperText={validationErrors.clientId}
                                     sx={{
                                         "& .MuiInputBase-input": {
                                             fontSize: "13px",   // 👈 change here
@@ -227,6 +283,8 @@ const AzureMigration = () => {
                             fullWidth
                             value={formData.clientSecret}
                             onChange={(e) => handleChange("clientSecret", e.target.value)}
+                            error={!!validationErrors.clientSecret}
+                            helperText={validationErrors.clientSecret}
                             InputProps={{ startAdornment: <KeyIcon sx={{ mr: 1, fontSize: 16 }} /> }}
                         />
 
@@ -239,6 +297,8 @@ const AzureMigration = () => {
                             onChange={(e) =>
                                 handleChange("subscription", e.target.value)
                             }
+                            error={!!validationErrors.subscription}
+                            helperText={validationErrors.subscription}
                             sx={{
                                 "& .MuiInputBase-input": {
                                     fontSize: "13px",      // selected value text
@@ -282,7 +342,11 @@ const AzureMigration = () => {
                             <Autocomplete
                                 disablePortal
                                 fullWidth
+                                value={formData.azureDataFactory}
                                 size="small"
+                                onChange={(e, value) =>
+                                    handleChange("azureDataFactory", value?.value || "")
+                                }
                                 options={azureDataFactoryOptions}
                                 sx={{
                                     "& .MuiInputBase-root": {
@@ -308,6 +372,8 @@ const AzureMigration = () => {
                                     <TextField
                                         {...params}
                                         // label="Select Azure Data Factory"
+                                        error={!!validationErrors.azureDataFactory}
+                                        helperText={validationErrors.azureDataFactory}
                                         placeholder="Select Azure Data Factory..."
                                         InputLabelProps={{
                                             sx: { fontSize: "13px" },
@@ -316,7 +382,13 @@ const AzureMigration = () => {
                                 )}
                             />
                         </Box>
-                        <CheckBoxDropdown />
+
+                        <CheckBoxDropdown handleChange={handleChange} />
+                        {validationErrors.pipelines && (
+                            <Typography color="error" fontSize={12}>
+                                {validationErrors.pipelines}
+                            </Typography>
+                        )}
 
                         <Box>
                             <Typography sx={{ fontSize: 11, fontWeight: 600, mb: 0.5, color: "#4a6080" }}>
@@ -326,6 +398,10 @@ const AzureMigration = () => {
                                 disablePortal
                                 fullWidth
                                 size="small"
+                                value={formData.fabricWorkspace}
+                                onChange={(e, value) =>
+                                    handleChange("fabricWorkspace", value?.value || "")
+                                }
                                 options={fabricWorkspacesOptions}
                                 sx={{
                                     "& .MuiInputBase-root": {
@@ -351,6 +427,8 @@ const AzureMigration = () => {
                                     <TextField
                                         {...params}
                                         // label="Select Azure Data Factory"
+                                        error={!!validationErrors.fabricWorkspace}
+                                        helperText={validationErrors.fabricWorkspace}
                                         placeholder="Select Fabric Workspace..."
                                         InputLabelProps={{
                                             sx: { fontSize: "13px" },
@@ -363,7 +441,12 @@ const AzureMigration = () => {
                             <Typography sx={{ fontSize: 11, fontWeight: 600, mb: 0.5, color: "#4a6080" }}>
                                 • UPLOAD CONFIG FILE
                             </Typography>
-                            <DragDropUpload />
+                            <DragDropUpload handleChange={handleChange} />
+                            {validationErrors.configFile && (
+                                <Typography color="error" fontSize={12}>
+                                    {validationErrors.configFile}
+                                </Typography>
+                            )}
                         </Box>
                         <Box
                             sx={{
@@ -600,7 +683,7 @@ const AzureMigration = () => {
                     fontSize={12}
                     color="text.secondary"
                 >
-                    © 2025 Azure Migration Tool · Secured with TLS 1.3 · All credentials encrypted
+                    © 2026 Azure Migration Tool · Secured with TLS 1.3 · All credentials encrypted
                 </Typography>
             </Container>
         </Box>

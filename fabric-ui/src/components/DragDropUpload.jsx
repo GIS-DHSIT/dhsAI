@@ -15,11 +15,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-const ALLOWED_TYPES = [".json", ".yaml", ".xml"];
+const ALLOWED_TYPES = [".csv", ".xlsx"];
 
-export default function DragDropUpload() {
+export default function DragDropUpload({ handleChange }) {
     const [files, setFiles] = useState([]);
     const [dragActive, setDragActive] = useState(false);
+
+    console.log(files, "Current Files");
 
     /* ---------------- File Validation ---------------- */
 
@@ -43,6 +45,7 @@ export default function DragDropUpload() {
         });
 
         setFiles((prev) => [...prev, ...validFiles]);
+        handleChange("configFile", [...files, ...validFiles]);
     };
 
     /* ---------------- Drag Events ---------------- */
@@ -104,14 +107,14 @@ export default function DragDropUpload() {
                     color="text.secondary"
                     sx={{ mb: 2 }}
                 >
-                    Supports .json, .yaml, .xml · Max 50MB
+                    Supports .csv, .xlsx · Max 50MB
                 </Typography>
 
                 {/* Hidden Input */}
                 <input
                     type="file"
                     multiple
-                    accept=".json,.yaml,.xml"
+                    accept=".csv,.xlsx"
                     style={{ display: "none" }}
                     id="upload-file"
                     onChange={(e) => validateFiles(e.target.files)}

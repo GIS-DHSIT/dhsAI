@@ -22,7 +22,7 @@ const pipelineData = [
     { name: "Pipeline_Analytics_Export", disabled: false },
 ];
 
-export default function AdfPipelines() {
+export default function AdfPipelines({ handleChange }) {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState([]);
     const [search, setSearch] = useState("");
@@ -162,7 +162,10 @@ export default function AdfPipelines() {
                                             size="small"
                                             disabled={item.disabled}
                                             checked={selected.includes(item.name)}
-                                            onChange={() => handleToggle(item.name)}
+                                            onChange={() => {
+                                                handleToggle(item.name)
+                                                handleChange("pipelines",[...selected, item.name])
+                                            }}
                                         />
                                         <Typography
                                             sx={{
