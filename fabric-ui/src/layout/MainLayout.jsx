@@ -36,10 +36,10 @@ const MainLayout = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <Header handleDrawerToggle={handleDrawerToggle} />
-      <Sidebar
+      {/* <Sidebar
         mobileOpen={mobileOpen}
         handleDrawerToggle={handleDrawerToggle}
-      />
+      /> */}
 
       <Box
         component="main"

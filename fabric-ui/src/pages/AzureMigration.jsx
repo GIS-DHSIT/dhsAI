@@ -13,6 +13,7 @@ import {
     Container,
     Grid,
     Autocomplete,
+    CircularProgress,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import KeyIcon from "@mui/icons-material/Key";
@@ -27,8 +28,12 @@ import LayersIcon from "@mui/icons-material/Layers";
 import FolderIcon from "@mui/icons-material/Folder";
 import CheckBoxDropdown from "../components/CheckBoxDropdown";
 import DragDropUpload from "../components/DragDropUpload";
-import { configureAdf } from "../services/authentication/authentication";
+import { configureAdf, handleMigration } from "../services/authentication/authentication";
+import dhsLogo from "../assets/dhs-logo.png";
 import * as yup from "yup";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "my-super-secret-key";
 
 const guidRegex =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
@@ -150,44 +155,65 @@ const AzureMigration = () => {
     };
 
     const handleCreate = async () => {
-        try {
-            const currentSchema = stepSchemas[activeStep];
+        handleNext();
+        // try {
+        //     const currentSchema = stepSchemas[activeStep];
 
-            await currentSchema.validate(formData, {
-                abortEarly: false,
-            });
+        //     await currentSchema.validate(formData, {
+        //         abortEarly: false,
+        //     });
 
-            setValidationErrors({});
-            setError(null);
+        //     setValidationErrors({});
+        //     setError(null);
 
-            if (activeStep === 0) {
-                setLoading(true);
+        //     if (activeStep === 0) {
+        //         setLoading(true);
 
-                const payload = {
-                    tenantId: formData.tenantId,
-                    clientId: formData.clientId,
-                    clientSecret: formData.clientSecret,
-                    azureSubscriptionId: formData.subscription,
-                };
+        //         const encryptData = (text) => {
+        //             return CryptoJS.AES.encrypt(text, SECRET_KEY).toString();
+        //         };
 
-                const response = await configureAdf(payload);
-                console.log("ADF Configuration Response:", response);
-            }
+        //         const payload = {
+        //             tenantId: encryptData(formData.tenantId),
+        //             clientId: encryptData(formData.clientId),
+        //             clientSecret: encryptData(formData.clientSecret),
+        //             azureSubscriptionId: encryptData(formData.subscription),
+        //         };
 
-            handleNext();
-        } catch (err) {
-            if (err.inner) {
-                const errors = {};
-                err.inner.forEach((e) => {
-                    errors[e.path] = e.message;
-                });
-                setValidationErrors(errors);
-            } else {
-                console.error(err);
-            }
-        } finally {
-            setLoading(false);
-        }
+        //         const response = await configureAdf(payload);
+        //         setLoading(false);
+        //         console.log("ADF Configuration Response:", response);
+        //     } else if (activeStep === 1) {
+        //         setLoading(true);
+
+        //         const formdataPayload = new FormData();
+        //         formdataPayload.append("azureDataFactory", formData.azureDataFactory);
+        //         formdataPayload.append("fabricWorkspace", formData.fabricWorkspace);
+        //         formdataPayload.append("pipelines", JSON.stringify(formData.pipelines));
+
+        //         formData.configFile.forEach((file, index) => {
+        //             formdataPayload.append(`configFile_${index}`, file);
+        //         });
+
+        //         const response = await handleMigration(formdataPayload);
+        //         setLoading(false);
+        //         console.log("Migration Response:", response);
+        //     }
+
+        //     handleNext();
+        // } catch (err) {
+        //     if (err.inner) {
+        //         const errors = {};
+        //         err.inner.forEach((e) => {
+        //             errors[e.path] = e.message;
+        //         });
+        //         setValidationErrors(errors);
+        //     } else {
+        //         console.error(err);
+        //     }
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     const handleChange = (field, value) => {
@@ -479,8 +505,11 @@ const AzureMigration = () => {
                                     <div className="proc-icon-wrap">
                                         <div className="proc-ripple"></div>
                                         <div className="proc-ripple"></div>
-                                        <div className="proc-icon-circle" id="procIconCircle">
-                                            <svg id="procIconSpin" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
+                                        {/* <div className="proc-icon-circle">
+                                            <CircularProgress />
+                                        </div> */}
+                                        <div className="proc-icon-circle">
+                                            <svg><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>
                                         </div>
                                     </div>
                                     <div className="proc-title" id="procTitle">Migration in Progress</div>
@@ -515,15 +544,11 @@ const AzureMigration = () => {
                     <Box
                         sx={{
                             background: "#1e40af",
-                            paddingLeft: "16px",
-                            paddingRight: "16px",
-                            paddingTop: "3px",
-                            paddingBottom: "3px",
-                            borderRadius: "8px",
-                            fontWeight: "bold",
+                            borderRadius: 2,
+                            paddingTop: 0.5,
                         }}
                     >
-                        DHS
+                        <img src={dhsLogo} width={80} alt="dhs-log" />
                     </Box>
                 </Toolbar>
             </AppBar>

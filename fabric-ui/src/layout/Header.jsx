@@ -1,84 +1,25 @@
-// import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-// import { useContext } from "react";
-// import { AuthContext } from "../context/AuthContext";
+import { AppBar, Toolbar, Box } from "@mui/material";
+import dhsLogo from "../assets/dhs-logo.png";
 
-// const Header = () => {
-//   const { logout } = useContext(AuthContext);
-
-//   return (
-//     <AppBar position="static">
-//       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-//         <Typography variant="h6">Fabric Admin Portal</Typography>
-//         <Button color="inherit" onClick={logout}>
-//           Logout
-//         </Button>
-//       </Toolbar>
-//     </AppBar>
-//   );
-// };
-
-// export default Header;
-
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Box,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
-
-const Header = ({ handleDrawerToggle }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
+const Header = () => {
   return (
     <AppBar
       position="fixed"
-      elevation={1}
-      sx={{
-        backgroundColor: "#fff",
-        color: "#000",
-      }}
+      sx={{ background: "#1a2639", paddingX: 2, top: 0, left: 0, right: 0 }}
     >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton onClick={handleDrawerToggle}>
-            <MenuIcon />
-          </IconButton>
-
-          <Typography variant="h6" sx={{ ml: 2 }}>
-            Fabric Admin Portal
-          </Typography>
-        </Box>
-
-        <Box>
-          <Button
-            endIcon={<ExpandMoreIcon />}
-            onClick={(e) => setAnchorEl(e.currentTarget)}
-          >
-            Admin User
-          </Button>
-
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-          >
-            <MenuItem>Profile</MenuItem>
-            <MenuItem>Settings</MenuItem>
-          </Menu>
-
-          <Button
-            variant="contained"
-            sx={{ ml: 2 }}
-          >
-            Logout
-          </Button>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between", minHeight: "48px !important", }}>
+        <div className="logo">
+          <div className="logo-icon"><svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
+          <span className="logo-text">Fabric<span>Shift</span></span>
+        </div>
+        <Box
+          sx={{
+            background: "#1e40af",
+            borderRadius: 2,
+            paddingTop: 0.5,
+          }}
+        >
+          <img src={dhsLogo} width={80} alt="dhs-log" />
         </Box>
       </Toolbar>
     </AppBar>
